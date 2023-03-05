@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/index.css' %}" />
+    <title>BillBoard</title>
+  </head>
+  <body>
+    {% if home %}
+    <div class="flex-container">
+      <div id="bill_board">
+        <p id="message">{{message}}</p>
+        <p class="max_price">Max Price: {{price}} BTC</p>
+        &nbsp;
+        <button onclick="show_form()" id="bid_button">Bid</button>
+      </div>
+      <div id="form">
+        <form action="/payments/create/" method="post">
+          {% csrf_token %}
+          <label id="input_label" for="message">Message : </label>
+          &nbsp;
+          <input required id="input_message" name="message" type="text" />
+          &nbsp;
+          <input id="button_ok" type="submit" value="OK" />
+        </form>
+        &nbsp;
+        <p>
+          You have to pay more than the Max price to list you message on the
+          BillBoard
+        </p>
+        <div class="max_price">Max Price: {{price}} BTC</div>
+        &nbsp;
+        <button
+          onClick="window.location.href=window.location.href"
+          id="back_button"
+        >
+          Back
+        </button>
+      </div>
+    </div>
+    {% else %}
+    <div class="flex-container">
+      <div id="invoice">
+        <p class="invoice_items">Order Id : {{data.order_id}}</p>
+        <div>
+          <p class="invoice_items">Address : {{data.addr}}</p>
+          <p class="invoice_items">Status : {{data.status}}</p>
+          <p class="invoice_items">Invoice Status : {{data.invoice_status}}</p>
+          <p class="invoice_items">Pay more than : {{max}}</p>
+          <p class="invoice_items">Paid : {{data.paid}}</p>
+        </div>
+        <a href="bitcoin:{{data.addr}}?amount={{price|floatformat:8}}+0.0000001">
+          <img src="https://www.bitcoinqrcodemaker.com/api/?style=bitcoin&address={{data.addr}}&amount={{price|floatformat:8}}+0.0000001&color=1">
+      </a>  
+        &nbsp; {% if data.status == 'Confirmed' %}
+        <a style="text-decoration: none" href="/"
+          ><button id="billboard_button">Home</button></a
+        >
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+    <script type="text/javascript">
+      var address = "{{data.addr}}";
+      var status_ = "{{data.invoice_status}}";
+    </script>
+    <script src="{% static 'js/invoice.js' %}"></script>
+    <script src="{% static 'js/index.js' %}"></script>
+  </body>
+</html>
